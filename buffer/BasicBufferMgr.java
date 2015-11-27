@@ -2,6 +2,7 @@ package simpledb.buffer;
 
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 
 import simpledb.file.Block;
@@ -177,7 +178,21 @@ class BasicBufferMgr {
 			 * (!buff.isPinned() && !buff.alreadyAssigned) { return buff; } }
 			 */
 		}
-		//Chooses modified  page with lowest LSN
+		
+		Iterator<Block> iterator1 = bufferPoolMap.keySet().iterator();
+		while(iterator1.hasNext()){
+			Block bkey = iterator1.next();
+			loopVariable = bufferPoolMap.get(bkey);
+			if (!bufferpool[loopVariable].isPinned()
+					&& bufferpool[loopVariable].modifiedBy >= 0
+					&& bufferpool[loopVariable].logSequenceNumber < maxLSN) {
+				buff = bufferpool[loopVariable];
+				maxLSN = buff.logSequenceNumber;
+				// return buff;
+			}
+			
+		}
+		/*//Chooses modified  page with lowest LSN
 		for (loopVariable = 0; loopVariable < bufferpool.length; loopVariable++) {
 			if (!bufferpool[loopVariable].isPinned()
 					&& bufferpool[loopVariable].modifiedBy >= 0
@@ -188,19 +203,30 @@ class BasicBufferMgr {
 			}
 		}
 		// if none modified then choose unpinned page with lowest LSN
-		if (buff == null) {
+		/* if (buff == null) {
 			maxLSN = Integer.MAX_VALUE;
 			for (loopVariable = 0; loopVariable < bufferpool.length; loopVariable++) {
 				if (!bufferpool[loopVariable].isPinned()
-						&& bufferpool[loopVariable].logSequenceNumber < maxLSN) {
+						&& bufferpool[loopVariable].logSequenceNumber < maxLSN && bufferpool[loopVariable].logSequenceNumber >= 0) {
 					buff = bufferpool[loopVariable];
 					maxLSN = buff.logSequenceNumber;
 					// return buff;
 				}
 			}
 		}
-		return buff;
+		return buff; */
 
+		if (buff == null) {
+			maxLSN = Integer.MAX_VALUE;
+			for (loopVariable = 0; loopVariable < bufferpool.length; loopVariable++) {
+				if (!bufferpool[loopVariable].isPinned()) {
+					buff = bufferpool[loopVariable];
+					//maxLSN = buff.logSequenceNumber;
+					return buff;
+				}
+			}
+		}
+		return buff;
 		/*
 		 * int index = -1; int size = freeBuffers.size(); if (size != 0) { index
 		 * = freeBuffers.getFirst(); // Temporary Code .Need to modify it //
