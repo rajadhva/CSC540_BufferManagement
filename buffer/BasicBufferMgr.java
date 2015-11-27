@@ -216,9 +216,13 @@ class BasicBufferMgr {
 		}
 		return buff; */
 
-		if (buff == null) {
+		
+		Iterator<Block> iterator2 = bufferPoolMap.keySet().iterator();
+		while(iterator2.hasNext()){
+			Block bkey = iterator2.next();
+			loopVariable = bufferPoolMap.get(bkey);
+          if (buff == null) {
 			maxLSN = Integer.MAX_VALUE;
-			for (loopVariable = 0; loopVariable < bufferpool.length; loopVariable++) {
 				if (!bufferpool[loopVariable].isPinned()) {
 					buff = bufferpool[loopVariable];
 					//maxLSN = buff.logSequenceNumber;
@@ -232,7 +236,8 @@ class BasicBufferMgr {
 		 * = freeBuffers.getFirst(); // Temporary Code .Need to modify it //
 		 * based on replacement policy. return bufferpool[index]; } else {
 		 * return null; }
-		 */
+		 */ 
+		 
 
 	}
 }
