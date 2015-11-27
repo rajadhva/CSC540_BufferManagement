@@ -1,20 +1,24 @@
 package simpledb.buffer;
 
-import java.util.*;
-import simpledb.file.*;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.LinkedList;
+
+import simpledb.file.Block;
+import simpledb.file.FileMgr;
 
 /**
  * Manages the pinning and unpinning of buffers to blocks.
  * 
  * @author Edward Sciore
- *
+ * 
  */
 class BasicBufferMgr {
 	private Buffer[] bufferpool;
 	private int numAvailable;
 	private Hashtable<Block, Integer> bufferPoolMap; // for id'ing blocks
 														// assigned to buffers
-	private LinkedList<Integer> freeBuffers; // to identify free blocks
+	private LinkedList<Buffer> freeBuffers; // to identify free blocks
 
 	/**
 	 * Creates a buffer manager having the specified number of buffer slots.
@@ -34,21 +38,24 @@ class BasicBufferMgr {
 		bufferPoolMap = new Hashtable<Block, Integer>(numbuffs); // initialize
 																	// hash
 																	// table.
-		freeBuffers = new LinkedList<Integer>(); // initialize free buffers.
+		freeBuffers = new LinkedList<Buffer>(); // initialize free buffers.
 		for (int i = 0; i < numbuffs; i++) {
-			bufferpool[i] = new Buffer();
-			freeBuffers.add(i); // initialize all to be free buffers
+			bufferpool[i] = new Buffer(i);
+			freeBuffers.add(bufferpool[i]); // initialize all to be free buffers
 		}
 	}
-   //display the contents of all the buffers.
-	public String toString(){
-		   String buffInfo = new String();
-		   for (Buffer buff : bufferpool){
-			   buffInfo += buff.toString() + System.getProperty("line.separator"); // Use system newline
-		   }
-		   return buffInfo;
-	   }
-	
+
+	// display the contents of all the buffers.
+	public String toString() {
+		String buffInfo = new String();
+		for (Buffer buff : bufferpool) {
+			buffInfo += buff.toString() + System.getProperty("line.separator"); // Use
+																				// system
+																				// newline
+		}
+		return buffInfo;
+	}
+
 	/**
 	 * Flushes the dirty buffers modified by the specified transaction.
 	 * 
@@ -79,10 +86,11 @@ class BasicBufferMgr {
 				return null;
 			buff.assignToBlock(blk);
 		}
-		if (!buff.isPinned())
+		if (!buff.isPinned()) {
 			bufferPoolMap.put(blk, buff.getBufferIndex()); // adding blk,
 															// bufferindex;
-		numAvailable--;
+			numAvailable--;
+		}
 		buff.pin();
 		return buff;
 	}
@@ -143,7 +151,7 @@ class BasicBufferMgr {
 		Integer x = bufferPoolMap.get(blk);
 
 		if (x != null) {
-			System.out.println(bufferpool[x]); //For Debug
+			System.out.println(bufferpool[x]); // For Debug
 			return bufferpool[x];
 
 		} else {
@@ -151,22 +159,54 @@ class BasicBufferMgr {
 		}
 	}
 
+	// Uses Least Recently Modified Buffer Replacement Policy
 	private Buffer chooseUnpinnedBuffer() {
-		/*for (Buffer buff : bufferpool)
-			if (!buff.isPinned())
-				return buff;
-		return null;*/
-		int index=-1;
-		int size= freeBuffers.size();
-		if(size!=0)
-		{
-			index=freeBuffers.getFirst(); //Temporary Code .Need to modify it based on replacement policy. 
-			return bufferpool[index]; 
+		//Date leastRecentlyModifiedTime = new Date(); // (Date)Integer.MAX_VALUE;
+		int maxLSN = Integer.MAX_VALUE;
+		int loopVariable = 0;
+		Buffer buff = null;
+
+		// If any buffer is still unallocated then allocate it
+		if (!freeBuffers.isEmpty()) {
+			buff = freeBuffers.getFirst();
+			freeBuffers.removeFirst();
+			return buff;
+			/*
+			 * for (loopVariable = 0; loopVariable < bufferpool.length;
+			 * loopVariable++) { buff = bufferpool[loopVariable]; if
+			 * (!buff.isPinned() && !buff.alreadyAssigned) { return buff; } }
+			 */
 		}
-		else
-		{
-			return null;
+		//Chooses modified  page with lowest LSN
+		for (loopVariable = 0; loopVariable < bufferpool.length; loopVariable++) {
+			if (!bufferpool[loopVariable].isPinned()
+					&& bufferpool[loopVariable].modifiedBy >= 0
+					&& bufferpool[loopVariable].logSequenceNumber < maxLSN) {
+				buff = bufferpool[loopVariable];
+				maxLSN = buff.logSequenceNumber;
+				// return buff;
+			}
 		}
-		
+		// if none modified then choose unpinned page with lowest LSN
+		if (buff == null) {
+			maxLSN = Integer.MAX_VALUE;
+			for (loopVariable = 0; loopVariable < bufferpool.length; loopVariable++) {
+				if (!bufferpool[loopVariable].isPinned()
+						&& bufferpool[loopVariable].logSequenceNumber < maxLSN) {
+					buff = bufferpool[loopVariable];
+					maxLSN = buff.logSequenceNumber;
+					// return buff;
+				}
+			}
+		}
+		return buff;
+
+		/*
+		 * int index = -1; int size = freeBuffers.size(); if (size != 0) { index
+		 * = freeBuffers.getFirst(); // Temporary Code .Need to modify it //
+		 * based on replacement policy. return bufferpool[index]; } else {
+		 * return null; }
+		 */
+
 	}
 }
