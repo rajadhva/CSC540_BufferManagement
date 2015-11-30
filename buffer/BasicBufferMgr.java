@@ -81,15 +81,19 @@ class BasicBufferMgr {
 	 */
 	synchronized Buffer pin(Block blk) {
 		Buffer buff = findExistingBuffer(blk);
+		Block lastBlock = null;
 		if (buff == null) {
 			buff = chooseUnpinnedBuffer();
 			if (buff == null)
 				return null;
+			lastBlock = buff.block();
+			// if last block not null remove it from hashMap
+			if(lastBlock != null)
+				bufferPoolMap.remove(lastBlock);
+			bufferPoolMap.put(blk, buff.getBufferIndex());
 			buff.assignToBlock(blk);
 		}
 		if (!buff.isPinned()) {
-			bufferPoolMap.put(blk, buff.getBufferIndex()); // adding blk,
-															// bufferindex;
 			numAvailable--;
 		}
 		buff.pin();
@@ -109,8 +113,12 @@ class BasicBufferMgr {
 	 */
 	synchronized Buffer pinNew(String filename, PageFormatter fmtr) {
 		Buffer buff = chooseUnpinnedBuffer();
+		Block lastBlock = null;
 		if (buff == null)
 			return null;
+		lastBlock = buff.block();
+		if (lastBlock != null)
+				bufferPoolMap.remove(lastBlock);
 		buff.assignToNew(filename, fmtr);
 		bufferPoolMap.put(buff.block(), buff.getBufferIndex()); // Get block
 																// using block
@@ -216,13 +224,12 @@ class BasicBufferMgr {
 		}
 		return buff; */
 
-		
+        if (buff == null) {
 		Iterator<Block> iterator2 = bufferPoolMap.keySet().iterator();
 		while(iterator2.hasNext()){
 			Block bkey = iterator2.next();
 			loopVariable = bufferPoolMap.get(bkey);
-          if (buff == null) {
-			maxLSN = Integer.MAX_VALUE;
+
 				if (!bufferpool[loopVariable].isPinned()) {
 					buff = bufferpool[loopVariable];
 					//maxLSN = buff.logSequenceNumber;
