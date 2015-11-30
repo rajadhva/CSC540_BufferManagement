@@ -23,6 +23,8 @@ public class Buffer {
 	int logSequenceNumber = -1; // negative means no corresponding log
 										// record
 	boolean alreadyAssigned = false;
+	private int bufferReadCount;
+	private int bufferWriteCount;
 
 	/**
 	 * Creates a new buffer, wrapping a new {@link simpledb.file.Page page}.
@@ -51,7 +53,9 @@ public class Buffer {
 	public Buffer(int index) {
 		bufferIndex = index;
 		lastModified = new Date();
-		System.out.println("Buffer Allocated");
+		System.out.println("Buffer Created");
+		bufferReadCount = 0;
+		bufferWriteCount = 0;
 	}
 
 	// Retrieves bufferIndex
@@ -116,7 +120,10 @@ public class Buffer {
 	 *            the LSN of the corresponding log record
 	 */
 	public void setInt(int offset, int val, int txnum, int lsn) {
+		bufferWriteCount++;
+		System.out.print("setInt lsn=" + lsn);
 		modifiedBy = txnum;
+		System.out.println("modified by=" + modifiedBy);
 		if (lsn >= 0)
 			logSequenceNumber = lsn;
 		contents.setInt(offset, val);
@@ -140,7 +147,10 @@ public class Buffer {
 	 *            the LSN of the corresponding log record
 	 */
 	public void setString(int offset, String val, int txnum, int lsn) {
+		bufferWriteCount++;
+		System.out.print("setString lsn=" + lsn);
 		modifiedBy = txnum;
+		System.out.println("modified by=" + modifiedBy);
 		if (lsn >= 0)
 			logSequenceNumber = lsn;
 		contents.setString(offset, val);
@@ -174,6 +184,7 @@ public class Buffer {
 	 */
 	void pin() {
 		pins++;
+		bufferReadCount++;
 	}
 
 	/**
@@ -239,5 +250,13 @@ public class Buffer {
 		blk = contents.append(filename);
 		pins = 0;
 		lastModified = new Date(); // Changes the last modified Date
+	}
+	
+	public int getReadCount() {
+		return bufferReadCount;
+	}
+
+	public int getWriteCount() {
+		return bufferWriteCount;
 	}
 }

@@ -172,14 +172,24 @@ class BasicBufferMgr {
 	// Uses Least Recently Modified Buffer Replacement Policy
 	private Buffer chooseUnpinnedBuffer() {
 		//Date leastRecentlyModifiedTime = new Date(); // (Date)Integer.MAX_VALUE;
+		for (Buffer buff1 : bufferpool) {
+			System.out.println("Buffer " + buff1.getBufferIndex() + " LSN="
+					+ buff1.logSequenceNumber + "Modified By" + buff1.modifiedBy
+					+ "isPinned " + buff1.isPinned()+"");
+		}
+		System.out.println();
+		
 		int maxLSN = Integer.MAX_VALUE;
 		int loopVariable = 0;
 		Buffer buff = null;
+		int index=-1;
 
 		// If any buffer is still unallocated then allocate it
 		if (!freeBuffers.isEmpty()) {
 			buff = freeBuffers.getFirst();
 			freeBuffers.removeFirst();
+			System.out.println("New Buffer " + buff.getBufferIndex()
+					+ "Allocated");
 			return buff;
 			/*
 			 * for (loopVariable = 0; loopVariable < bufferpool.length;
@@ -197,6 +207,7 @@ class BasicBufferMgr {
 					&& bufferpool[loopVariable].logSequenceNumber < maxLSN) {
 				buff = bufferpool[loopVariable];
 				maxLSN = buff.logSequenceNumber;
+				index = loopVariable;
 				// return buff;
 			}
 			
@@ -234,10 +245,13 @@ class BasicBufferMgr {
 				if (!bufferpool[loopVariable].isPinned()) {
 					buff = bufferpool[loopVariable];
 					//maxLSN = buff.logSequenceNumber;
+					System.out.println("Buffer Choosen For Replacement "
+							+ buff.getBufferIndex());
 					return buff;
 				}
 			}
 		}
+		System.out.println("Buffer Choosen For Replacement " + index);
 		return buff;
 		/*
 		 * int index = -1; int size = freeBuffers.size(); if (size != 0) { index
@@ -247,5 +261,16 @@ class BasicBufferMgr {
 		 */ 
 		 
 
+	}
+	
+	public void getStatistics() {
+		
+		for (Buffer buff : bufferpool) {
+            
+			int bufferReadCount = buff.getReadCount();
+            System.out.println("The read count of buffer "+buff.getBufferIndex()+" "+ bufferReadCount);
+            int bufferWriteCount = buff.getWriteCount();
+            System.out.println("The write count of buffer "+buff.getBufferIndex()+" "+ bufferWriteCount);
+		}
 	}
 }
