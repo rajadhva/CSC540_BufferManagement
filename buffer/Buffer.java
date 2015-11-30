@@ -16,15 +16,14 @@ import java.util.*;
 public class Buffer {
 	private Page contents = new Page();
 	private Block blk = null;
-	private int pins = 0;
-	private int bufferIndex;
-	Date lastModified;
+	int pins = 0;
+	private int bufferIndex; // buffer Id
 	int modifiedBy = -1; // negative means not modified
 	int logSequenceNumber = -1; // negative means no corresponding log
-										// record
+								// record
 	boolean alreadyAssigned = false;
-	private int bufferReadCount;
-	private int bufferWriteCount;
+	private int bufferReadCount; // to get buffer read count
+	private int bufferWriteCount; // to get buffer write count
 
 	/**
 	 * Creates a new buffer, wrapping a new {@link simpledb.file.Page page}.
@@ -49,16 +48,15 @@ public class Buffer {
 	 *            the byte offset of the page
 	 * @return the integer value at that offset
 	 */
-	// Overloaded Constructor for initializing index.
+	// CSC-540 Buffer_Management Overloaded Constructor for initializing index.
 	public Buffer(int index) {
 		bufferIndex = index;
-		lastModified = new Date();
 		System.out.println("Buffer Created");
 		bufferReadCount = 0;
 		bufferWriteCount = 0;
 	}
 
-	// Retrieves bufferIndex
+	// CSC-540 Buffer_Management Retrieves bufferIndex
 	public Integer getBufferIndex() {
 		if (bufferIndex == -1)
 			return null;
@@ -66,7 +64,7 @@ public class Buffer {
 			return bufferIndex;
 	}
 
-	// For outputting buffer Details.
+	// CSC-540 Buffer_Management For outputting buffer Details.
 	public String toString() {
 		String blockDetails;
 		if (blk != null)
@@ -74,15 +72,9 @@ public class Buffer {
 		else
 			blockDetails = "Not allocated";
 
-		String bufferDetails = "BufferId" + bufferIndex + "Pin Count" + pins
-				+ "Allocated Block" + blockDetails;
+		String bufferDetails = "BufferId" + bufferIndex + "Pin Count" + pins + "Allocated Block" + blockDetails;
 		return bufferDetails;
 
-	}
-
-	// For getting lastModifiedDate
-	public Date getLastModifiedDate() {
-		return lastModified;
 	}
 
 	public int getInt(int offset) {
@@ -120,14 +112,14 @@ public class Buffer {
 	 *            the LSN of the corresponding log record
 	 */
 	public void setInt(int offset, int val, int txnum, int lsn) {
-		bufferWriteCount++;
-		System.out.print("setInt lsn=" + lsn);
+		bufferWriteCount++; // increment write count for buffer
+		System.out.print("Buffer " + bufferIndex + " lsn=" + lsn);
 		modifiedBy = txnum;
-		System.out.println("modified by=" + modifiedBy);
+		System.out.println(" modified by=" + modifiedBy);
 		if (lsn >= 0)
 			logSequenceNumber = lsn;
 		contents.setInt(offset, val);
-		lastModified = new Date(); // Changes the last modified Date
+
 	}
 
 	/**
@@ -147,14 +139,13 @@ public class Buffer {
 	 *            the LSN of the corresponding log record
 	 */
 	public void setString(int offset, String val, int txnum, int lsn) {
-		bufferWriteCount++;
-		System.out.print("setString lsn=" + lsn);
+		bufferWriteCount++; // increment write count for buffer
+		System.out.print("Buffer " + bufferIndex + " lsn=" + lsn);
 		modifiedBy = txnum;
 		System.out.println("modified by=" + modifiedBy);
 		if (lsn >= 0)
 			logSequenceNumber = lsn;
 		contents.setString(offset, val);
-		lastModified = new Date(); // Changes the last modified Date
 	}
 
 	/**
@@ -184,7 +175,7 @@ public class Buffer {
 	 */
 	void pin() {
 		pins++;
-		bufferReadCount++;
+		bufferReadCount++; //Increasing buffer read count
 	}
 
 	/**
@@ -230,7 +221,6 @@ public class Buffer {
 		blk = b;
 		contents.read(blk);
 		pins = 0;
-		lastModified = new Date(); // Changes the last modified Date
 	}
 
 	/**
@@ -249,13 +239,14 @@ public class Buffer {
 		fmtr.format(contents);
 		blk = contents.append(filename);
 		pins = 0;
-		lastModified = new Date(); // Changes the last modified Date
+		
 	}
-	
+
+	//CSC-540 Buffer Management Gives the number of times buffer is read
 	public int getReadCount() {
 		return bufferReadCount;
 	}
-
+	//CSC-540 Buffer Management Gives the number of times buffer is written
 	public int getWriteCount() {
 		return bufferWriteCount;
 	}

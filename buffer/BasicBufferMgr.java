@@ -15,12 +15,14 @@ import simpledb.file.FileMgr;
  * @author Edward Sciore
  * 
  */
-class BasicBufferMgr {
-	private Buffer[] bufferpool;
+public class BasicBufferMgr {
+	public Buffer[] bufferpool;
 	private int numAvailable;
-	private HashMap<Block, Integer> bufferPoolMap; // for id'ing blocks
-														// assigned to buffers
-	private LinkedList<Buffer> freeBuffers; // to identify free blocks
+	// CSC-540 Buffer Management Map to store block buffer mapping(Task1)
+	public HashMap<Block, Buffer> bufferPoolMap;
+	// CSC-540 Buffer Management List to store the current free buffers(No block
+	// allocated yet).
+	private LinkedList<Buffer> freeBuffers;
 
 	/**
 	 * Creates a buffer manager having the specified number of buffer slots.
@@ -37,10 +39,10 @@ class BasicBufferMgr {
 	BasicBufferMgr(int numbuffs) {
 		bufferpool = new Buffer[numbuffs];
 		numAvailable = numbuffs;
-		bufferPoolMap = new HashMap<Block, Integer>(numbuffs); // initialize
-																	// hash
-																	// table.
-		freeBuffers = new LinkedList<Buffer>(); // initialize free buffers.
+		// initialize hash Map
+		bufferPoolMap = new HashMap<Block, Buffer>(numbuffs);
+		// initialize free buffers.
+		freeBuffers = new LinkedList<Buffer>();
 		for (int i = 0; i < numbuffs; i++) {
 			bufferpool[i] = new Buffer(i);
 			freeBuffers.add(bufferpool[i]); // initialize all to be free buffers
@@ -89,9 +91,10 @@ class BasicBufferMgr {
 				return null;
 			lastBlock = buff.block();
 			// if last block not null remove it from hashMap
-			if(lastBlock != null)
+			if (lastBlock != null)
 				bufferPoolMap.remove(lastBlock);
-			bufferPoolMap.put(blk, buff.getBufferIndex());
+			// Allocating a new block to the buffer
+			bufferPoolMap.put(blk, buff);
 			buff.assignToBlock(blk);
 		}
 		if (!buff.isPinned()) {
@@ -118,14 +121,12 @@ class BasicBufferMgr {
 		if (buff == null)
 			return null;
 		lastBlock = buff.block();
+		// if last block not null remove it from hashMap
 		if (lastBlock != null)
-				bufferPoolMap.remove(lastBlock);
+			bufferPoolMap.remove(lastBlock);
+		// Allocating a new block to the buffer
 		buff.assignToNew(filename, fmtr);
-		bufferPoolMap.put(buff.block(), buff.getBufferIndex()); // Get block
-																// using block
-																// method..adding
-																// blk,
-																// bufferindex;
+		bufferPoolMap.put(buff.block(), buff);
 		numAvailable--;
 		buff.pin();
 		return buff;
@@ -152,125 +153,104 @@ class BasicBufferMgr {
 		return numAvailable;
 	}
 
+	// CSC-540 Buffer Management- Uses Map to determine whether block is in
+	// buffer currently
 	private Buffer findExistingBuffer(Block blk) {
-		/*
-		 * for (Buffer buff : bufferpool) { Block b = buff.block(); if (b !=
-		 * null && b.equals(blk)) return buff; }
-		 */
 
-		Integer x = bufferPoolMap.get(blk);
+		Buffer buff = bufferPoolMap.get(blk);
 
-		if (x != null) {
-			System.out.println(bufferpool[x]); // For Debug
-			return bufferpool[x];
+		if (buff!= null) {
+			//System.out.println("Block " + blk.number() + " already in buffer " + x); // For
+																						// Debug
+			return buff;
 
 		} else {
 			return null;
 		}
 	}
 
-	// Uses Least Recently Modified Buffer Replacement Policy
+	// CSC-540 Buffer Management-Uses Least Recently Modified Buffer Replacement
+	// Policy
 	private Buffer chooseUnpinnedBuffer() {
-		//Date leastRecentlyModifiedTime = new Date(); // (Date)Integer.MAX_VALUE;
-		for (Buffer buff1 : bufferpool) {
-			System.out.println("Buffer " + buff1.getBufferIndex() + " LSN="
-					+ buff1.logSequenceNumber + "Modified By" + buff1.modifiedBy
-					+ "isPinned " + buff1.isPinned()+"");
-		}
-		System.out.println();
-		
+		//getStatistics();(Can be used to get the statistics whenever a unpinned buffer is chosen)
+
 		int maxLSN = Integer.MAX_VALUE;
-		int loopVariable = 0;
+		Buffer currentBuffer = null;
 		Buffer buff = null;
-		int index=-1;
 
 		// If any buffer is still unallocated then allocate it
 		if (!freeBuffers.isEmpty()) {
 			buff = freeBuffers.getFirst();
 			freeBuffers.removeFirst();
-			System.out.println("New Buffer " + buff.getBufferIndex()
-					+ "Allocated");
+			System.out.println("New Buffer " + buff.getBufferIndex() + "Allocated");
 			return buff;
-			/*
-			 * for (loopVariable = 0; loopVariable < bufferpool.length;
-			 * loopVariable++) { buff = bufferpool[loopVariable]; if
-			 * (!buff.isPinned() && !buff.alreadyAssigned) { return buff; } }
-			 */
+
 		}
-		
+		// Chooses modified page with lowest non-negative LSN
 		Iterator<Block> iterator1 = bufferPoolMap.keySet().iterator();
-		while(iterator1.hasNext()){
+		while (iterator1.hasNext()) {
 			Block bkey = iterator1.next();
-			loopVariable = bufferPoolMap.get(bkey);
-			if (!bufferpool[loopVariable].isPinned()
-					&& bufferpool[loopVariable].modifiedBy >= 0
-					&& bufferpool[loopVariable].logSequenceNumber < maxLSN) {
-				buff = bufferpool[loopVariable];
+			currentBuffer = bufferPoolMap.get(bkey);
+			if (!currentBuffer.isPinned() && currentBuffer.modifiedBy >= 0
+					&& currentBuffer.logSequenceNumber < maxLSN
+					&& currentBuffer.logSequenceNumber >= 0) {
+				buff = currentBuffer;
 				maxLSN = buff.logSequenceNumber;
-				index = loopVariable;
-				// return buff;
-			}
-			
-		}
-		/*//Chooses modified  page with lowest LSN
-		for (loopVariable = 0; loopVariable < bufferpool.length; loopVariable++) {
-			if (!bufferpool[loopVariable].isPinned()
-					&& bufferpool[loopVariable].modifiedBy >= 0
-					&& bufferpool[loopVariable].logSequenceNumber < maxLSN) {
-				buff = bufferpool[loopVariable];
-				maxLSN = buff.logSequenceNumber;
-				// return buff;
-			}
-		}
-		// if none modified then choose unpinned page with lowest LSN
-		/* if (buff == null) {
-			maxLSN = Integer.MAX_VALUE;
-			for (loopVariable = 0; loopVariable < bufferpool.length; loopVariable++) {
-				if (!bufferpool[loopVariable].isPinned()
-						&& bufferpool[loopVariable].logSequenceNumber < maxLSN && bufferpool[loopVariable].logSequenceNumber >= 0) {
-					buff = bufferpool[loopVariable];
-					maxLSN = buff.logSequenceNumber;
-					// return buff;
-				}
-			}
-		}
-		return buff; */
 
-        if (buff == null) {
-		Iterator<Block> iterator2 = bufferPoolMap.keySet().iterator();
-		while(iterator2.hasNext()){
-			Block bkey = iterator2.next();
-			loopVariable = bufferPoolMap.get(bkey);
+			}
 
-				if (!bufferpool[loopVariable].isPinned()) {
-					buff = bufferpool[loopVariable];
-					//maxLSN = buff.logSequenceNumber;
-					System.out.println("Buffer Choosen For Replacement "
-							+ buff.getBufferIndex());
+		}
+
+		// If no buffer is modified we look for the first unpinned,un-modified
+		// buffer and choose it for replacement.
+		if (buff == null) {
+			Iterator<Block> iterator2 = bufferPoolMap.keySet().iterator();
+			while (iterator2.hasNext()) {
+				Block bkey = iterator2.next();
+				currentBuffer = bufferPoolMap.get(bkey);
+
+				if (!currentBuffer.isPinned()) {
+					buff =currentBuffer;
+
+					System.out.println("Buffer Choosen For Replacement " + buff.getBufferIndex());
 					return buff;
 				}
 			}
 		}
-		System.out.println("Buffer Choosen For Replacement " + index);
+		System.out.println("Buffer Choosen For Replacement " + buff.getBufferIndex());
 		return buff;
-		/*
-		 * int index = -1; int size = freeBuffers.size(); if (size != 0) { index
-		 * = freeBuffers.getFirst(); // Temporary Code .Need to modify it //
-		 * based on replacement policy. return bufferpool[index]; } else {
-		 * return null; }
-		 */ 
-		 
 
 	}
-	
+
+	// Get the statistics for the buffer.
 	public void getStatistics() {
-		
-		for (Buffer buff : bufferpool) {
-            
-			int bufferReadCount = buff.getReadCount();
-            System.out.println("The read count of buffer "+buff.getBufferIndex()+" "+ bufferReadCount);
-            int bufferWriteCount = buff.getWriteCount();
-            System.out.println("The write count of buffer "+buff.getBufferIndex()+" "+ bufferWriteCount);
+		System.out.println("Status of the buffer pool");
+		for (Buffer buff1 : bufferpool) {
+
+			int bufferReadCount = buff1.getReadCount();
+			int bufferWriteCount = buff1.getWriteCount();
+			System.out.println("Buffer " + buff1.getBufferIndex() + " LSN=" + buff1.logSequenceNumber + "Modified By"
+					+ buff1.modifiedBy + " Pin Count " + buff1.pins + " isPinned=" + buff1.isPinned() + " Read Count " + bufferReadCount + " Write Count" + bufferWriteCount);
+
+			/*int bufferReadCount = buff1.getReadCount();
+			System.out.println("The read count of buffer " + buff1.getBufferIndex() + " " + bufferReadCount);
+			int bufferWriteCount = buff1.getWriteCount();
+			System.out.println("The write count of buffer " + buff1.getBufferIndex() + " " + bufferWriteCount);*/
 		}
+		System.out.println();
 	}
+
+	//CSC-540 Buffer Management- Test method given in the project description
+	boolean containsMapping(Block blk)
+	{
+		return bufferPoolMap.containsKey(blk);
+	}
+	
+	////CSC-540 Buffer Management - Test method given in the project description
+	Buffer getMapping(Block blk)
+	{
+		return bufferPoolMap.get(blk);
+	}
+	
+	
 }
