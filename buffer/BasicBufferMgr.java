@@ -2,6 +2,7 @@ package simpledb.buffer;
 
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -17,7 +18,7 @@ import simpledb.file.FileMgr;
 class BasicBufferMgr {
 	private Buffer[] bufferpool;
 	private int numAvailable;
-	private Hashtable<Block, Integer> bufferPoolMap; // for id'ing blocks
+	private HashMap<Block, Integer> bufferPoolMap; // for id'ing blocks
 														// assigned to buffers
 	private LinkedList<Buffer> freeBuffers; // to identify free blocks
 
@@ -36,7 +37,7 @@ class BasicBufferMgr {
 	BasicBufferMgr(int numbuffs) {
 		bufferpool = new Buffer[numbuffs];
 		numAvailable = numbuffs;
-		bufferPoolMap = new Hashtable<Block, Integer>(numbuffs); // initialize
+		bufferPoolMap = new HashMap<Block, Integer>(numbuffs); // initialize
 																	// hash
 																	// table.
 		freeBuffers = new LinkedList<Buffer>(); // initialize free buffers.
