@@ -22,7 +22,7 @@ public class BasicBufferMgr {
 	public HashMap<Block, Buffer> bufferPoolMap;
 	// CSC-540 Buffer Management List to store the current free buffers(No block
 	// allocated yet).
-	private LinkedList<Buffer> freeBuffers;
+	public LinkedList<Buffer> freeBuffers;
 
 	/**
 	 * Creates a buffer manager having the specified number of buffer slots.
@@ -67,9 +67,15 @@ public class BasicBufferMgr {
 	 *            the transaction's id number
 	 */
 	synchronized void flushAll(int txnum) {
-		for (Buffer buff : bufferpool)
-			if (buff.isModifiedBy(txnum))
-				buff.flush();
+		Buffer buff1 = null;
+				Iterator<Block> iterator1 = bufferPoolMap.keySet().iterator();
+		while (iterator1.hasNext()) {
+			Block bkey = iterator1.next();
+			buff1 = bufferPoolMap.get(bkey);
+				//for (Buffer buff : bufferpool)
+			if (buff1.isModifiedBy(txnum))
+				buff1.flush();
+		}
 	}
 
 	/**
@@ -217,6 +223,7 @@ public class BasicBufferMgr {
 				}
 			}
 		}
+		if(buff!=null)
 		System.out.println("Buffer Choosen For Replacement " + buff.getBufferIndex());
 		return buff;
 
@@ -225,8 +232,12 @@ public class BasicBufferMgr {
 	// Get the statistics for the buffer.
 	public void getStatistics() {
 		System.out.println("Status of the buffer pool");
-		for (Buffer buff1 : bufferpool) {
-
+		Buffer buff1 = null;
+		//for (Buffer buff1 : bufferpool) {
+		Iterator<Block> iterator2 = bufferPoolMap.keySet().iterator();
+		while (iterator2.hasNext()) {
+			Block bkey = iterator2.next();
+			buff1 = bufferPoolMap.get(bkey);
 			int bufferReadCount = buff1.getReadCount();
 			int bufferWriteCount = buff1.getWriteCount();
 			System.out.println("Buffer " + buff1.getBufferIndex() + " LSN=" + buff1.logSequenceNumber + "Modified By"
@@ -241,13 +252,13 @@ public class BasicBufferMgr {
 	}
 
 	//CSC-540 Buffer Management- Test method given in the project description
-	boolean containsMapping(Block blk)
+	public boolean containsMapping(Block blk)
 	{
 		return bufferPoolMap.containsKey(blk);
 	}
 	
 	////CSC-540 Buffer Management - Test method given in the project description
-	Buffer getMapping(Block blk)
+	public Buffer getMapping(Block blk)
 	{
 		return bufferPoolMap.get(blk);
 	}

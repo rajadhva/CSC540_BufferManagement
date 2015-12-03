@@ -1,0 +1,131 @@
+Buffer Created
+Buffer Created
+Buffer Created
+Buffer Created
+Buffer Created
+Buffer Created
+Buffer Created
+Buffer Created
+new transaction: 1
+recovering existing database
+New Buffer 0Allocated
+New Buffer 1Allocated
+New Buffer 2Allocated
+New Buffer 3Allocated
+New Buffer 4Allocated
+New Buffer 5Allocated
+New Buffer 6Allocated
+New Buffer 7Allocated
+Buffer Choosen For Replacement 5
+Buffer Choosen For Replacement 3
+Buffer Choosen For Replacement 4
+Buffer Choosen For Replacement 4
+Buffer Choosen For Replacement 4
+Buffer Choosen For Replacement 4
+Buffer Choosen For Replacement 1
+Buffer Choosen For Replacement 1
+Buffer Choosen For Replacement 1
+Buffer Choosen For Replacement 1
+Buffer Choosen For Replacement 5
+Buffer Choosen For Replacement 5
+Buffer Choosen For Replacement 5
+Buffer Choosen For Replacement 5
+Buffer Choosen For Replacement 5
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+Buffer Choosen For Replacement 2
+transaction 1 committed
+database server ready
+Buffer Choosen For Replacement 2
+Status of the buffer pool
+Buffer 0 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 15 Write Count0
+Buffer 1 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 14 Write Count0
+Buffer 2 LSN=-1Modified By-1 Pin Count 1 isPinned=true Read Count 32 Write Count0
+Buffer 3 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 9 Write Count0
+Buffer 4 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 12 Write Count0
+Buffer 5 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 13 Write Count0
+Buffer 6 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 1 Write Count0
+Buffer 7 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 1 Write Count0
+
+Buffer Choosen For Replacement 0
+Status of the buffer pool
+Buffer 0 LSN=-1Modified By-1 Pin Count 1 isPinned=true Read Count 16 Write Count0
+Buffer 1 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 14 Write Count0
+Buffer 2 LSN=-1Modified By-1 Pin Count 1 isPinned=true Read Count 32 Write Count0
+Buffer 3 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 9 Write Count0
+Buffer 4 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 12 Write Count0
+Buffer 5 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 13 Write Count0
+Buffer 6 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 1 Write Count0
+Buffer 7 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 1 Write Count0
+
+Buffer Choosen For Replacement 6
+Status of the buffer pool
+Buffer 0 LSN=-1Modified By-1 Pin Count 1 isPinned=true Read Count 16 Write Count0
+Buffer 1 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 14 Write Count0
+Buffer 2 LSN=-1Modified By-1 Pin Count 1 isPinned=true Read Count 32 Write Count0
+Buffer 3 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 9 Write Count0
+Buffer 4 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 12 Write Count0
+Buffer 5 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 13 Write Count0
+Buffer 6 LSN=-1Modified By-1 Pin Count 1 isPinned=true Read Count 2 Write Count0
+Buffer 7 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 1 Write Count0
+
+Buffer 0 lsn=10 modified by=5
+Buffer 6 lsn=30 modified by=15
+Status of the buffer pool
+Buffer 0 LSN=10Modified By5 Pin Count 1 isPinned=true Read Count 16 Write Count1
+Buffer 1 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 14 Write Count0
+Buffer 2 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 32 Write Count0
+Buffer 3 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 9 Write Count0
+Buffer 4 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 12 Write Count0
+Buffer 5 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 13 Write Count0
+Buffer 6 LSN=30Modified By15 Pin Count 1 isPinned=true Read Count 2 Write Count1
+Buffer 7 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 1 Write Count0
+
+Status of the buffer pool
+Buffer 0 LSN=10Modified By5 Pin Count 0 isPinned=false Read Count 16 Write Count1
+Buffer 1 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 14 Write Count0
+Buffer 2 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 32 Write Count0
+Buffer 3 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 9 Write Count0
+Buffer 4 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 12 Write Count0
+Buffer 5 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 13 Write Count0
+Buffer 6 LSN=30Modified By15 Pin Count 1 isPinned=true Read Count 2 Write Count1
+Buffer 7 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 1 Write Count0
+
+Status of the buffer pool
+Buffer 0 LSN=10Modified By5 Pin Count 0 isPinned=false Read Count 16 Write Count1
+Buffer 1 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 14 Write Count0
+Buffer 2 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 32 Write Count0
+Buffer 3 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 9 Write Count0
+Buffer 4 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 12 Write Count0
+Buffer 5 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 13 Write Count0
+Buffer 6 LSN=30Modified By15 Pin Count 0 isPinned=false Read Count 2 Write Count1
+Buffer 7 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 1 Write Count0
+
+Buffer Choosen For Replacement 0
+Status of the buffer pool
+Buffer 0 LSN=10Modified By-1 Pin Count 1 isPinned=true Read Count 17 Write Count1
+Buffer 1 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 14 Write Count0
+Buffer 2 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 32 Write Count0
+Buffer 3 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 9 Write Count0
+Buffer 4 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 12 Write Count0
+Buffer 5 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 13 Write Count0
+Buffer 6 LSN=30Modified By15 Pin Count 0 isPinned=false Read Count 2 Write Count1
+Buffer 7 LSN=-1Modified By-1 Pin Count 0 isPinned=false Read Count 1 Write Count0
